@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraction Quiz Game</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(45deg, #f4f7fb, #d3e1f0);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+            color: #3c4b61;
+            margin-bottom: 20px;
+        }
+        .timer {
+            font-size: 1.25em;
+            color: #e74c3c;
+            margin: 15px 0;
+        }
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            outline: none;
+            margin: 15px 0;
+            transition: 0.3s ease-in-out;
+        }
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .hidden {
+            display: none;
+        }
+        #result {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        #score {
+            font-size: 1.25em;
+            margin-top: 15px;
+            color: #34495e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fraction Quiz Game</h1>
+        <p id="question">Press 'Start' to begin!</p>
+        <p class="timer" id="timer">Time Left: 60s</p>
+        <input type="text" id="answer" placeholder="Enter your answer (e.g., 3/4)">
+        <div>
+            <button onclick="submitAnswer()">Submit</button>
+            <button onclick="startGame()">Start</button>
+        </div>
+        <p id="result"></p>
+        <p id="score">Score: 0</p>
+    </div>
+
+    <script>
+        let fraction1, fraction2, operator, correctAnswer, timer, timeLeft = 60, score = 0;
+
+        function getRandomFraction() {
+            let numerator = Math.floor(Math.random() * 10) + 1;
+            let denominator = Math.floor(Math.random() * 10) + 1;
+            return `${numerator}/${denominator}`;
+        }
+
+        function generateEquation() {
+            fraction1 = getRandomFraction();
+            fraction2 = getRandomFraction();
+            operator = ["+", "-", "*", "/"][Math.floor(Math.random() * 4)];
+
+            let f1 = eval(fraction1);
+            let f2 = eval(fraction2);
+
+            switch (operator) {
+                case '+': correctAnswer = f1 + f2; break;
+                case '-': correctAnswer = f1 - f2; break;
+                case '*': correctAnswer = f1 * f2; break;
+                case '/': correctAnswer = f1 / f2; break;
+            }
+
+            document.getElementById("question").innerText = `Solve: ${fraction1} ${operator} ${fraction2} = ?`;
+            document.getElementById("answer").value = "";
+        }
+
+        function startGame() {
+            score = 0;
+            document.getElementById("score").innerText = `Score: ${score}`;
+            timeLeft = 60;
+            generateEquation();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("result").innerText = "Time's up! Game Over.";
+                    document.getElementById("answer").disabled = true;
+                } else {
+                    timeLeft--;
+                    document.getElementById("timer").innerText = `Time Left: ${timeLeft}s`;
+                }
+            }, 1000);
+        }
+
+        function submitAnswer() {
+            if (timeLeft <= 0) return;
+            let userAnswer = parseFloat(document.getElementById("answer").value);
+            if (Math.abs(userAnswer - correctAnswer) < 0.01) {
+                document.getElementById("result").innerText = "Correct! ✅";
+                score++;
+            } else {
+                document.getElementById("result").innerText = `Wrong! ❌ Correct answer: ${correctAnswer.toFixed(2)}`;
+            }
+            document.getElementById("score").innerText = `Score: ${score}`;
+            generateEquation();
+            resetTimer();
+        }
+
+        function resetTimer() {
+            timeLeft = 60;
+            document.getElementById("timer").innerText = `Time Left: 60s`;
+            startTimer();
+        }
+    </script>
+</body>
+</html>
